@@ -1,0 +1,17 @@
+public class Waypoints : MonoBehaviour
+{
+
+    public static Transform[] points;
+
+    void Awake() //La funcion Awake es similar a Start, pero se inicializa aunque el script no este activado
+    {
+
+        points = new Transform[transform.childCount];
+        for (int i = 0; i < points.Length; i++)
+        {
+            points[i] = transform.GetChild(i);
+        } //Creamos un arreglo y a travez de un ciclo guardamos cada uno de los Hijos(waypoints) en dicho arreglo. 
+
+    }
+
+}
