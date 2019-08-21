@@ -1,0 +1,48 @@
+using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
+
+public class WaveSpawner : MonoBehaviour
+{
+
+    public Transform enemyPrefab;
+    public Transform spawnPoint; 
+
+    public float timeBetweenWaves = 5.5f; //Variable para el tiempo entre cada oleada.
+    private float countdown = 2f; //Variable para el tiempo de la oleada inicial.
+
+    public Text waveCountdownText; //Variable de texto para el conteo de oleadas.
+
+    private int waveIndex = 1;
+
+    void Update()
+    {
+        if (countdown <= 0)
+        {
+            StartCoroutine(SpawnWave());
+            countdown = timeBetweenWaves;
+        } //Condicional para activar le metodo de la oleada y reiniciar el contador.
+
+        countdown -= Time.deltaTime; //Reduce el conteo en 1 cada segundo.
+
+        waveCountdownText.text = Mathf.Round(countdown).ToString(); //Pasa el contador a texto, además de usar una funcion matematica, para no mostrar numeros decimales.
+    }
+
+    IEnumerator SpawnWave() //Metodo para activar una oleada.
+    {
+
+        for (int i = 0; i < waveIndex; i++) //Ciclo para aumentar la cantidad de enemigos con cada oleada.
+        {
+            SpawnEnemy(); //Instacia de metodo para crear un enemigo.
+            yield return new WaitForSeconds(0.5f); //Da la orden de esperar por medio segundo antes de continuar.
+        }
+
+        waveIndex++; 
+    }
+
+    void SpawnEnemy() //Metodo para la creacion del enemegio.
+    {
+        Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation); //Crea un enemigo ya prefabricado en la posicion preestablecida.
+    }
+
+}
