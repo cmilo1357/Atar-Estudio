@@ -1,0 +1,95 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Turret : MonoBehaviour
+{
+
+    private Transform target;
+
+    [Header("Attributes")]
+
+    [SerializeField] private float range = 15f;
+    [SerializeField] private float fireRate = 1f;
+    private float fireCountdown = 0f;
+
+    [Header("Unity Setup Fields")]
+
+    [SerializeField] private string enemyTag = "Enemy";
+    [SerializeField] private Transform partToRotate;
+    [SerializeField] private float turnSpeed = 10f;
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private Transform firePoint;
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        InvokeRepeating("UpdateTarget", 0f, 0.5f); //Incova el metodo UpdateTarget cada 0.5 segundos, desde el segundo 0.
+    }
+
+    void UpdateTarget()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag); //Sirve para localizar todos los enemigos.
+        float shortestDistance = Mathf.Infinity;
+        GameObject nearestEnemy = null;
+        foreach (GameObject enemy in enemies)
+        {
+            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position); //Guardamos la distancia de cada enemigo que encontremos en un float.
+            if (distanceToEnemy < shortestDistance) //Condicional para verificar si la distancia del enemigo es menor que cualquier otra distancia encontrada anteriormente.
+            {
+                shortestDistance = distanceToEnemy; //Igualamos la distancia mas corta, con las distancia del enemigo.
+                nearestEnemy = enemy; //Asi sabemos cual es el enemigo mas cercanos que hemos encontrado hasta el momento.
+            }
+        }
+
+        if (nearestEnemy != null && shortestDistance <= range) //Condicional para verificar que el enemigo mas cercano no sea nulo y que su distancia este en el rango.
+        {
+            target = nearestEnemy.transform; //Igualamos la variable target con la posición del enemigo mas cercano.
+        }
+        else
+        {
+            target = null;
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (target==null) //Condicional para verificar si el target no es nulo, en caso de que sea nulo, el metodo retorna sin hacer nada.
+        {
+            return;
+        }
+
+        //Sistema de apuntado automatico
+        Vector3 dir = target.position - transform.position; //Igualamos la direccion de nuestro objetivo con respecto a la diferencia de la nuestra.
+        Quaternion lookRotation = Quaternion.LookRotation(dir); //Igualamos la direccion con una rotacion usanado la funcion matematica de unity Quaternion.
+        Vector3 rotation = Quaternion.Lerp(partToRotate.rotation, lookRotation, Time.deltaTime * turnSpeed).eulerAngles; //Con el lerp indicamos que parte queremos rotar, hacia donde la queremos rotar, el tiempo en el que queremos que haga la rotacion y luego la convertimos a angulos de euler.
+        partToRotate.rotation = Quaternion.Euler (0f, rotation.y, 0f); //Rotamos la parte de la torreta unicamente en el angulo Y.
+
+        if (fireCountdown <= 0f) //Condicional para los disparos.
+        {
+            Shoot();
+            fireCountdown = 1f / fireRate; 
+        }
+
+        fireCountdown -= Time.deltaTime; //Contador para los disparos.
+
+    }
+
+    void Shoot()
+    {
+       GameObject bulletGO = (GameObject)Instantiate(bulletPrefab, firePoint.position, firePoint.rotation); //Se iguala el objecto de juego con la intanciacion del proyectil prefabricado.
+       Bullet bullet = bulletGO.GetComponent<Bullet>(); //Se crea un objeto de la clase Bullet.
+       if (bullet != null)
+       {
+           bullet.Seek(target); //Se llama el metodo Seek de la clase bullet.
+       }
+    }
+
+    void OnDrawGizmosSelected () //Metodo para activar un gizmo cuando seleccionamos la torreta.
+    {
+        Gizmos.color = Color.red; //Que sea de color rojo.
+        Gizmos.DrawWireSphere (transform.position, range); //Con forma de esfera ubicado en la posicion de la torreta y con su respectivo rango.
+    }
+}
