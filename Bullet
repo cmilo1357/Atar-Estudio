@@ -1,0 +1,44 @@
+using UnityEngine;
+
+public class Bullet : MonoBehaviour
+{
+
+    private Transform target;
+
+    [SerializeField] private float speed = 70f;
+    [SerializeField] private GameObject impactEffect;
+
+    public void Seek(Transform _target)
+    {
+        target = _target;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Vector3 dir = target.position - transform.position; //Un vector para la distancia hasta el objetivo.
+        float distanceThisFrame = speed * Time.deltaTime; //La velocidad a la que se va mover el proyectil en el tiempo.
+
+        if (dir.magnitude <= distanceThisFrame) //Condicional para cuando la distancia al objetivo, es menor o igual a la velocidad del proyectil.
+        {
+            HitTarget();
+            return;   
+        }
+
+        transform.Translate(dir.normalized * distanceThisFrame, Space.World); //Un trasnform para el movimiento del proyectil hacia el objetivo.
+    }
+
+    void HitTarget() //Metodo para cuando el proyectil hace contacto con el objetivo.
+    {
+        GameObject effectIns = (GameObject)Instantiate(impactEffect, transform.position, transform.rotation); //Creamos un objeto de juego para el effecto del sistema de particulas.
+        Destroy(effectIns, 2f); //Destruye el sistema de particulas luego de dos segundos.
+        Destroy(target.gameObject); //Destuye el enemigo objetivo.
+        Destroy(gameObject); //Destruye el proyectil.
+    }
+}
