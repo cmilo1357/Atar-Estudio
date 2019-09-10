@@ -1,7 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
 public class Enemy : MonoBehaviour
 {
 
-    public float speed = 10f;
+    [SerializeField] private float speed = 10f;
 
     private Transform target;
     private int wavepointIndex = 0;
@@ -16,13 +20,13 @@ public class Enemy : MonoBehaviour
         Vector3 dir = target.position - transform.position;
         transform.Translate(dir.normalized * speed * Time.deltaTime, Space.World); //Esto sirve para hacer que el enemigo se desplaze a la direccion que le estamos dando en el target.
 
-        if (Vector3.Distance(transform.position, target.position) <= 0.4f) //Hace que el enemigo se desplaze hasta el Target
+        if (Vector3.Distance(transform.position, target.position) <= 0.4f) //Hace que el enemigo se desplaze hasta el Target.
         {
             GetNextWaypoint();
         }
     }
 
-    void GetNextWaypoint()
+    void GetNextWaypoint() //Metodo para cambiar de punto guia.
     {
         if(wavepointIndex >= Waypoints.points.Length - 1)
         {
@@ -31,7 +35,7 @@ public class Enemy : MonoBehaviour
         } //Destruye el objeto cuando este llega al final.
 
         wavepointIndex++;
-        target = Waypoints.points[wavepointIndex]; //Cambia al Target que sigue
+        target = Waypoints.points[wavepointIndex]; //Cambia al Target que sigue.
     }
 
 }
