@@ -1,0 +1,30 @@
+using UnityEngine;
+
+public class BuildManager : MonoBehaviour
+{
+
+    [SerializeField] private GameObject standardTurretPrefab;
+    private GameObject torretToBuild;
+    public static BuildManager instance; //Variable para poder acceder al buildmanager desde las otras clases.
+    private void Awake() 
+    {
+        if (instance != null) //Condicional para verificar que no haya mas de un build manager en escena.
+        {
+            Debug.LogError("Hay mas de un build manager en escena!");
+            return;
+        }
+
+        instance = this; //Igualamos la variable instance a este buildmanager.
+    }
+
+    private void Start() 
+    {
+        torretToBuild = standardTurretPrefab;
+    }
+
+    public GameObject GetTorretToBuild()
+    {
+        return torretToBuild;
+    }
+
+}
