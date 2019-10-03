@@ -1,0 +1,81 @@
+using UnityEngine;
+
+public class CameraController : MonoBehaviour
+{
+
+    private bool doMovement;
+
+    [SerializeField] private float panSpeed;
+    [SerializeField] private float panBorderThickness;
+    [SerializeField] private float scrollSpeed;
+    [SerializeField] private float minY;
+    [SerializeField] private float maxY;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        panSpeed = 30f;
+        panBorderThickness = 10f;
+        doMovement = true;
+        scrollSpeed = 5f;
+        minY = 10f;
+        maxY = 80f;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            doMovement = !doMovement;
+        }
+        //Condicional para bloquear/desbloquear el movimiento de la camara con la tecla Escape.
+
+        if (!doMovement)
+        {
+            return;
+        }
+
+
+        if (Input.GetKey("w")  || Input.mousePosition.y >= Screen.height - panBorderThickness)
+        {
+            transform.Translate(Vector3.forward * panSpeed * Time.deltaTime, Space.World);
+        }
+        //Condicional para el movimiento hacia arriba de la camara.
+        //El cual puede ser con la tecla W o por la cercania del mouse al borde de arriba.
+
+         if (Input.GetKey("s")  || Input.mousePosition.y <= panBorderThickness)
+        {
+            transform.Translate(Vector3.back * panSpeed * Time.deltaTime, Space.World);
+        }
+        //Condicional para el movimiento hacia abajo de la camara.
+        //El cual puede ser con la tecla S o por la cercania del mouse al borde de abajo.
+
+         if (Input.GetKey("d")  || Input.mousePosition.x >= Screen.width - panBorderThickness)
+        {
+            transform.Translate(Vector3.right * panSpeed * Time.deltaTime, Space.World);
+        }
+        //Condicional para el movimiento hacia la derecha de la camara.
+        //El cual puede ser con la tecla D o por la cercania del mouse al borde de la derecha.
+
+         if (Input.GetKey("a")  || Input.mousePosition.x <= panBorderThickness)
+        {
+            transform.Translate(Vector3.left * panSpeed * Time.deltaTime, Space.World);
+        }
+        //Condicional para el movimiento hacia la izquierda de la camara.
+        //El cual puede ser con la tecla A o por la cercania del mouse al borde de la izquierda.
+
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        //Variable para el movimiento de la rueda del mouse.
+
+        Vector3 pos = transform.position;
+        //Posicion incial de la camara.
+        pos.y -= scroll * 1000 * scrollSpeed * Time.deltaTime;
+        //Esta variable permite cambiar la posicion de la camara para hacer zoom.
+        pos.y = Mathf.Clamp (pos.y, minY, maxY);
+        //La función clamp permite limitar el zoom de la camara.
+        transform.position = pos;
+        //Posicion final de la camara.
+    }
+}
