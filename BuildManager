@@ -3,8 +3,9 @@ using UnityEngine;
 public class BuildManager : MonoBehaviour
 {
 
-    [SerializeField] private GameObject standardTurretPrefab;
-    private GameObject torretToBuild;
+    public GameObject standardTurretPrefab;
+    public GameObject anotherTurretPrefab;
+    private GameObject turretToBuild;
     public static BuildManager instance; //Variable para poder acceder al buildmanager desde las otras clases.
     private void Awake() 
     {
@@ -17,14 +18,14 @@ public class BuildManager : MonoBehaviour
         instance = this; //Igualamos la variable instance a este buildmanager.
     }
 
-    private void Start() 
+    public GameObject GetTurretToBuild()
     {
-        torretToBuild = standardTurretPrefab;
+        return turretToBuild;
     }
 
-    public GameObject GetTorretToBuild()
+    public void SetTurretToBuild(GameObject turret)
     {
-        return torretToBuild;
+        turretToBuild = turret;
     }
 
 }
