@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Node : MonoBehaviour
 {
@@ -8,26 +9,47 @@ public class Node : MonoBehaviour
     private Color startColor;
     private Renderer rend;
     private GameObject turret;
+    private BuildManager buildManager;
 
     private void Start() 
     {
         rend = GetComponent<Renderer>(); //Obtiene el componente de renderer y lo guarda en una variable.
         startColor = rend.material.color; //Guarda el color incial del nodo.
+
+        buildManager = BuildManager.instance;
     }
 
     private void OnMouseDown() //Metodo para cuando se presiona el click sobre el collider.
     {
+         if(EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+        if(buildManager.GetTurretToBuild() == null)
+        {
+            return;
+        }
+
         if (turret != null)
         {
             Debug.Log("No se puede construir aqui! - TODO: Mensaje en pantalla.");
             return;
         }
-        GameObject turretToBuild = BuildManager.instance.GetTorretToBuild(); //Accede a nuestra clase build manager y llama el metodo el cual almacena la torreta elegida.
+        GameObject turretToBuild = buildManager.GetTurretToBuild(); //Accede a nuestra clase build manager y llama el metodo el cual almacena la torreta elegida.
         turret = (GameObject)Instantiate(turretToBuild, transform.position + positionOffset, transform.rotation); //Metodo para instanciar la torreta elegida.
     }
 
     void OnMouseEnter() //Metodo para cuando se entra en el collider.
     {
+        if(EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        if(buildManager.GetTurretToBuild() == null)
+        {
+            return;
+        }
         rend.material.color = hoverColor; //Activa el color establecido en unity.
     }
 
